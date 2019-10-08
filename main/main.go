@@ -1,7 +1,8 @@
 package main
 
-import "fmt"
+import pkg "te"
 
 func main() {
-	fmt.Println(11)
+	println(pkg.Name)
+	test.Add()
 }
