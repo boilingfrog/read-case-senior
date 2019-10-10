@@ -67,8 +67,10 @@ X86其实是是80X86的简称（后⾯三个字⺟），包括Intel 8086、80286
 GO汇编为了简化汇编代码的编写，引入PC，FP，SP，SB四个伪寄存器。四个伪寄存器加其它的通
 ⽤寄存器就是Go汇编语⾔对CPU的重新抽象，该抽象的结构也适⽤于其它⾮X86类型的体系结构。
 
+![Aaron Swartz](https://github.com/zhan-liz/read-case-senior/blob/master/asm/asm1.png?raw=true)
 
-
+在AMD64环境中，伪PC寄存器其实是IP指令计数器寄存器的别名。伪FP寄存器对应的是函数的帧指针，
+一般用来访问函数的参数和返回值。
 
 
 
