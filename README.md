@@ -354,6 +354,67 @@ func murmur64() uint64 {
 某个时间的增量，⽐如我们的系统上线是2018-08-01，那么我们可以把这个timestamp当作是从 2018-
 08-01 00:00:00.000 的偏移量。
 
+#### worker_id分配
+
+timestamp ， datacenter_id ， worker_id 和 sequence_id 这四个字段
+中， timestamp 和 sequence_id 是由程序在运⾏期⽣成的。但 datacenter_id 和 worker_id 需要我们
+在部署阶段就能够获取得到，并且⼀旦程序启动之后，就是不可更改的了（想想，如果可以随意更
+改，可能被不慎修改，造成最终⽣成的id有冲突）。
+
+⼀般不同数据中⼼的机器，会提供对应的获取数据中⼼id的API，所以 datacenter_id 我们可以在部署
+阶段轻松地获取到。⽽worker_id是我们逻辑上给机器分配的⼀个id，这个要怎么办呢？⽐较简单的想
+法是由能够提供这种⾃增id功能的⼯具来⽀持，⽐如MySQL:
+
+````
+mysql> insert into a (ip) values("10.1.2.101");
+Query OK, 1 row affected (0.00 sec)
+mysql> select last_insert_id();
++------------------+
+| last_insert_id() |
++------------------+
+| 2 |
++------------------+
+1 row in set (0.00 sec)
+````
+
+从MySQL中获取到 worker_id 之后，就把这个 worker_id 直接持久化到本地，以避免每次上线时都需
+要获取新的 worker_id 。让单实例的 worker_id 可以始终保持不变。
+
+当然，使⽤MySQL相当于给我们简单的id⽣成服务增加了⼀个外部依赖。依赖越多，我们的服务的可
+运维性就越差。
+
+考虑到集群中即使有单个id⽣成服务的实例挂了，也就是损失⼀段时间的⼀部分id，所以我们也可以更
+简单暴⼒⼀些，把 worker_id 直接写在worker的配置中，上线时，由部署脚本完成 worker_id 字段替
+换。
+
+### 开源实例
+#### 标准的snowflake实现
+
+github.com/bwmarrin/snowflake 是⼀个相当轻量化的snowflake的Go实现。
+
+![Aaron Swartz](https://github.com/zhan-liz/read-case-senior/blob/master/img/snowflake1.png?raw=true)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
