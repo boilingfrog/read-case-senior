@@ -245,7 +245,86 @@ func isTrue(phone string) bool {
 
 ![Aaron Swartz](https://github.com/zhan-liz/read-case-senior/blob/master/img/huidu2.png?raw=true)
 
+举个具体的例⼦，⽹站的注册环节，可能有两套API，按照⽤户ID进⾏灰度，分别是不同的存取逻辑。
+如果存储时使⽤了V1版本的API⽽获取时使⽤V2版本的API，那么就可能出现⽤户注册成功后反⽽返回
+注册失败消息的诡异问题。
+
+### 实现一套灰度发布系统
+
+#### 业务相关的简单灰度
+
+公司内⼀般都会有公共的城市名字和id的映射关系，如果业务只涉及中国国内，那么城市数量不会特别
+多，且id可能都在10000范围以内。那么我们只要开辟⼀个⼀万⼤⼩左右的bool数组，就可以满⾜需求
+了：
+
+````
+var cityID2Open = [12000]bool{}
+func init() {
+	readConfig()
+	for i:=0;i<len(cityID2Open);i++ {
+		if city i is opened in configs {
+			cityID2Open[i] = true
+		}
+	}
+}
+func isPassed(cityID int) bool {
+	return cityID2Open[cityID]
+}
+````
+如果公司给cityID赋的值⽐较⼤，那么我们可以考虑⽤map来存储映射关系，map的查询⽐数组稍慢，
+但扩展会灵活⼀些：
+````
+var cityID2Open = map[int]struct{}{}
+func init() {
+	readConfig()
+	for _, city := range openCities {
+		cityID2Open[city] = struct{}{}
+	}
+}
+func isPassed(cityID int) bool {
+	if _, ok := cityID2Open[cityID]; ok {
+		return true
+	}
+	return false
+}
+
+````
+按⽩名单、按业务线、按UA、按分发渠道发布，本质上和按城市发布是⼀样的，这⾥就不再赘述了按概率发布稍微特殊⼀些，不过不考虑输⼊实现起来也很简
+````
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+// rate 为 0~100
+func isPassed(rate int) bool {
+	if rate >= 100 {
+		return true
+	}
+	if rate > 0 && rand.Int(100) > rate {
+		return true
+	}
+	return false
+}
+````
 
 
-
-
+````
+package main
+import (
+"crypto/md5"
+"crypto/sha1"
+"github.com/spaolacci/murmur3"
+)
+var str = "hello world"
+func md5Hash() [16]byte {
+	return md5.Sum([]byte(str))
+}
+func sha1Hash() [20]byte {
+	return sha1.Sum([]byte(str))
+}
+func murmur32() uint32 {
+	return murmur3.Sum32([]byte(str))
+}
+func murmur64() uint64 {
+	return murmur3.Sum64([]byte(str))
+}
+````
