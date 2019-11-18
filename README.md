@@ -190,11 +190,11 @@ Protocol Buffers 是一种灵活，高效，自动化机制的结构数据序列
 ```
 // pass 3/1000
 func passed() bool {
-key := hashFunctions(userID) % 1000
-if key <= 2 {
-return true
-}
-return false
+     key := hashFunctions(userID) % 1000
+     if key <= 2 {
+       return true
+     }
+     return false
 }
 ```
 
@@ -213,11 +213,37 @@ return false
 因为和公司的业务相关，所以城市、业务线、UA、分发渠道这些都可能会被直接编码在系统⾥，不过
 功能其实⼤同⼩异。
 
+按白名单发布比较简单，功能上线时，我们希望只有公司内部的员工和测试人员可以访问到新的功能，
+会直接把账号，邮箱写入到白名单，拒绝其他任何账号的访问。
 
+按概率发布则是指实现一个简单的函数：
+````
+func isTrue() bool {
+    return true/false according to the rate provided by user
+}
+````
+其可以按照⽤户指定的概率返回 true 或者 false ，当然， true 的概率加 false 的概率应该是
+100%。这个函数不需要任何输⼊。
 
+````
+func isTrue(phone string) bool {
+    if hash of phone matches {
+       return true
+    }
+    return false
+}
+````
 
+这种情况可以按照指定的百分⽐，返回对应的 true 和 false ，和上⾯的单纯按照概率的区别是这⾥
+我们需要调⽤⽅提供给我们⼀个输⼊参数，我们以该输⼊参数作为源来计算哈希，并以哈希后的结果
+来求模，并返回结果。这样可以保证同⼀个⽤户的返回结果多次调⽤是⼀致的，在下⾯这种场景下，
+必须使⽤这种结果可预期的灰度算法。
 
+![Aaron Swartz](https://github.com/zhan-liz/read-case-senior/blob/master/img/huidu1.png?raw=true)
 
+如果使用随机的会出现下面的情况
+
+![Aaron Swartz](https://github.com/zhan-liz/read-case-senior/blob/master/img/huidu2.png?raw=true)
 
 
 
