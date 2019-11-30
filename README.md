@@ -395,6 +395,13 @@ github.com/bwmarrin/snowflake 是⼀个相当轻量化的snowflake的Go实现。
 ![Aaron Swartz](https://github.com/zhan-liz/read-case-senior/blob/master/img/snowflake1.png?raw=true)
 
 
+### 分布式锁
+
+并发的程序的运行，难免涉及对同一个变量的操作。这时候就需要加锁处理。
+
+
+
+
 
 
 
