@@ -1,13 +1,22 @@
 package main
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+)
 
 // 全局变量
 var counter int
 
 func main() {
 	// notLock()
-	haveLock()
+	// haveLock()
+	TryLock()
+}
+
+func tryLock() {
+
+	fmt.Println(2121)
 }
 
 func notLock() {
